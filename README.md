@@ -1,3 +1,7 @@
-Flask Tutorial 0.7
+Flask Cookbook (Lite Edition)
 ==============
-A Flask Tutorial 0.7 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
+A Flask Cookbook egy iskolai célokra tervezett minimalista Flask (Python) alapú keretrendszer.  
+A keretrendszer a következő szolgáltatásokkal segíti a webalkalmazások fejlesztése iránt érdeklődő gimnazista vagy technikus diákok munkáját:
+* jogosultságkezelés
+* adatbázis-kezelés (MySQL)
+* űrlapkezelés

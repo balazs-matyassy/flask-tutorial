@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Cookbook 0.7</title>
+    <title>{{ config.APP_TITLE }}{% if config.APP_SUBTITLE %} - {{ config.APP_SUBTITLE }}{% endif %}</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 </head>
@@ -14,7 +14,10 @@
             <div class="col"></div>
             <div class="col text-center">
                 <a class="blog-header-logo text-body-emphasis text-decoration-none" href="#">
-                    Flask Cookbook 0.7
+                    <h1>{{ config.APP_TITLE }}</h1>
+                    {% if config.APP_SUBTITLE %}
+                        <p>{{ config.APP_SUBTITLE }}</p>
+                    {% endif %}
                 </a>
             </div>
             <div class="col text-end">
@@ -25,15 +28,26 @@
 
     <div class="nav-scroller py-1 mb-3 border-bottom">
         <nav class="nav nav-underline">
-            <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('list_all_recipes') }}">
+            <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('pages.home') }}">
+                Home
+            </a>
+            <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('recipes.list_all') }}">
                 Recipes
             </a>
+            {% if is_admin() %}
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('users.list_all') }}">
+                    Users
+                </a>
+            {% endif %}
             {% if is_fully_authenticated() %}
-                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('logout') }}">
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('pages.profile') }}">
+                    Profile
+                </a>
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('security.logout') }}">
                     Logout [{{ g.user.username }}]
                 </a>
             {% else %}
-                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('login') }}">
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('security.login') }}">
                     Login
                 </a>
             {% endif %}
@@ -62,7 +76,7 @@
 
 <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
     <p>
-        Flask Cookbook 0.7
+        {{ config.APP_TITLE }}
     </p>
     <p class="mb-0">
         <a href="#">Back to top</a>
