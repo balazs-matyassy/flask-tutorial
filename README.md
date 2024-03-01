@@ -1,3 +1,3 @@
-Flask Tutorial 0.2
+Flask Tutorial 0.3
 ==============
-A Flask Tutorial 0.2 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
+A Flask Tutorial 0.3 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
