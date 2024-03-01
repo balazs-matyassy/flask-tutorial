@@ -1,5 +1,6 @@
 from flask import Flask, render_template, abort, request, flash, redirect, url_for
 
+from forms import EntityForm
 from recipe import (Recipe, find_all_recipes, find_recipe_by_id, find_all_recipes_by_name_like,
                     save_recipe, delete_recipe_by_id)
 
@@ -27,45 +28,29 @@ def view_recipe(recipe_id):
 @app.route('/create', methods=('GET', 'POST'))
 def create_recipe():
     recipe = Recipe()
-    errors = []
+    form = EntityForm(recipe)
 
-    if request.method == 'POST':
-        recipe.form = request.form
-        errors = recipe.validate()
+    if form.validate_on_submit():
+        save_recipe(recipe)
+        flash('Recipe created.')
 
-        if not errors:
-            save_recipe(recipe)
-            flash('Recipe created.')
+        return redirect(url_for('list_all_recipes'))
 
-            return redirect(url_for('list_all_recipes'))
-
-    return render_template(
-        'recipe_form.html',
-        recipe=recipe,
-        errors=errors
-    )
+    return render_template('recipe_form.html', form=form)
 
 
 @app.route('/edit/<int:recipe_id>', methods=('GET', 'POST'))
 def edit_recipe(recipe_id):
     recipe = find_recipe_by_id(recipe_id) or abort(404)
-    errors = []
+    form = EntityForm(recipe)
 
-    if request.method == 'POST':
-        recipe.form = request.form
-        errors = recipe.validate()
+    if form.validate_on_submit():
+        save_recipe(recipe)
+        flash('Recipe saved.')
 
-        if not errors:
-            save_recipe(recipe)
-            flash('Recipe saved.')
+        return redirect(url_for('edit_recipe', recipe_id=recipe.id))
 
-            return redirect(url_for('edit_recipe', recipe_id=recipe.id))
-
-    return render_template(
-        'recipe_form.html',
-        recipe=recipe,
-        errors=errors
-    )
+    return render_template('recipe_form.html', form=form)
 
 
 @app.route('/delete/<int:recipe_id>', methods=('POST',))

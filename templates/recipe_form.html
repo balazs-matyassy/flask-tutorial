@@ -1,12 +1,14 @@
 {% extends 'base.html' %}
 
+{% set recipe = form.entity %}
+
 {% block main %}
-    <h1>{{ 'Edit' if recipe.id else 'Create' }} recipe</h1>
+    <h1>{{ 'Create' if form.create_form else 'Edit' }} recipe</h1>
 
     <form method="post">
-        {% if errors %}
+        {% if form.errors %}
             <ul>
-                {% for error in errors %}
+                {% for error in form.errors %}
                     <li class="text-danger">{{ error }}</li>
                 {% endfor %}
             </ul>

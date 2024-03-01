@@ -1,3 +1,3 @@
-Flask Tutorial 0.4
+Flask Tutorial 0.5
 ==============
-A Flask Tutorial 0.4 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
+A Flask Tutorial 0.5 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
