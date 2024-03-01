@@ -1,6 +1,7 @@
 from flask import Flask, render_template, abort, request, flash, redirect, url_for, g, session
 
 from forms import EntityForm
+from persistence import connect, disconnect, install_command
 from recipe import (Recipe, find_all_recipes, find_recipe_by_id, find_all_recipes_by_name_like,
                     save_recipe, delete_recipe_by_id)
 from security import load_current_user, is_fully_authenticated
@@ -10,7 +11,15 @@ from user import User, find_user_by_username
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'dev'  # flash üzenetekhez kell
+app.config['DB_HOST'] = 'localhost'
+app.config['DB_PORT'] = 3306
+app.config['DB_USERNAME'] = 'root'
+app.config['DB_PASSWORD'] = 'password'
+app.config['DB_DATABASE'] = 'cookbook_tutorial'
 
+app.cli.add_command(install_command)
+app.before_request(connect)
+app.teardown_appcontext(disconnect)
 app.before_request(load_current_user)
 app.jinja_env.globals['is_fully_authenticated'] = lambda: g.user is not None
 

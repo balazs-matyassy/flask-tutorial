@@ -1,3 +1,6 @@
+from flask import g
+
+
 class Recipe:
     def __init__(self, category='', name='', difficulty=1, recipe_id=None):
         self.id = recipe_id
@@ -59,89 +62,105 @@ class Recipe:
 
         return errors
 
-    def to_line(self):
-        return f'{self.id}\t{self.category}\t{self.name}\t{self.difficulty}'
-
     @staticmethod
-    def create(line):
-        values = line.strip().split('\t')
+    def create(data):
+        if not data:
+            return None
 
-        return Recipe(
-            recipe_id=int(values[0].strip()),
-            category=values[1].strip(),
-            name=values[2].strip(),
-            difficulty=int(values[3].strip())
-        )
+        recipe = Recipe(recipe_id=data['id'])
+        recipe.form = data
+
+        return recipe
 
 
 def find_all_recipes():
-    with open('recipes.txt', encoding='utf-8') as file:
-        recipes = []
+    with g.db.cursor() as cursor:
+        query = '''
+                SELECT `id`, `category`,`name`, `difficulty`
+                FROM `recipe`
+                ORDER BY `category`, `name`;
+        '''
 
-        file.readline()  # header
+        cursor.execute(query)
 
-        for line in file:
-            recipe = Recipe.create(line)
-            recipes.append(recipe)
-
-        return recipes
+        return [Recipe.create(data) for data in cursor.fetchall()]
 
 
 def find_recipe_by_id(recipe_id):
-    for recipe in find_all_recipes():
-        if recipe.id == recipe_id:
-            return recipe
+    with g.db.cursor() as cursor:
+        query = '''
+                SELECT `id`, `category`,`name`, `difficulty`
+                FROM `recipe`
+                WHERE `id` = %s;
+        '''
+        args = (recipe_id,)
 
-    return None
+        cursor.execute(query, args)
+
+        return Recipe.create(cursor.fetchone())
 
 
 def find_all_recipes_by_name_like(name):
-    recipes = []
+    with g.db.cursor() as cursor:
+        query = '''
+                SELECT `id`, `category`,`name`, `difficulty`
+                FROM `recipe`
+                WHERE `name` LIKE %s
+                ORDER BY `category`, `name`;
+        '''
+        args = (f'%{name}%',)
 
-    for recipe in find_all_recipes():
-        if name.lower() in recipe.name.lower():
-            recipes.append(recipe)
+        cursor.execute(query, args)
 
-    return recipes
+        return [Recipe.create(data) for data in cursor.fetchall()]
 
 
 def save_recipe(recipe):
-    recipes = find_all_recipes()
+    with g.db.cursor() as cursor:
+        if not recipe.id:
+            query = '''
+                    INSERT INTO `recipe`
+                        (`category`, `name`, `difficulty`)
+                    VALUES(%s, %s, %s);
+            '''
+            args = (
+                recipe.category,
+                recipe.name,
+                recipe.difficulty
+            )
 
-    if not recipe.id:
-        max_id = 0
+            cursor.execute(query, args)
+            g.db.commit()
 
-        for i in range(len(recipes)):
-            if recipes[i].id > max_id:
-                max_id = recipes[i].id
+            recipe.id = cursor.lastrowid
+        else:
+            query = '''
+                    UPDATE `recipe`
+                    SET `category` = %s,
+                        `name` = %s,
+                        `difficulty` = %s
+                    WHERE `id` = %s;
+            '''
+            args = (
+                recipe.category,
+                recipe.name,
+                recipe.difficulty,
+                recipe.id
+            )
 
-        recipe.id = max_id + 1
-        recipes.append(recipe)
-    else:
-        for i in range(len(recipes)):
-            if recipes[i].id == recipe.id:
-                recipes[i] = recipe
-                break
-
-    __store_all_recipes(recipes)
+            cursor.execute(query, args)
+            g.db.commit()
 
     return recipe
 
 
 def delete_recipe_by_id(recipe_id):
-    recipes = find_all_recipes()
+    with g.db.cursor() as cursor:
+        query = '''
+                DELETE FROM `recipe`
+                WHERE `id` = %s;
+        '''
+        args = (recipe_id,)
 
-    for i in range(len(recipes)):
-        if recipes[i].id == recipe_id:
-            recipes.pop(i)
-            break
-
-    __store_all_recipes(recipes)
-
-
-def __store_all_recipes(recipes):
-    with open('recipes.txt', 'w', encoding='utf-8') as file:
-        file.write('id\tcategory\tname\tdifficulty\n')
-
-        for recipe in sorted(recipes, key=lambda item: f'{item.category}\0{item.name}'):
-            file.write(f'{recipe.to_line()}\n')
+        cursor.execute(query, args)
+        g.db.commit()
