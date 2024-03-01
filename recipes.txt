@@ -1,3 +1,4 @@
-id	category	name	description	difficulty
+id	category	name	difficulty
+3	Beef	Hamburger	3
 1	Breakfast	Bacon Cheese Omelet	2
 2	Breakfast	Toast	1

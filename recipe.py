@@ -20,6 +20,48 @@ class Recipe:
 
         return 'Unknown'
 
+    @property
+    def form(self):
+        return {
+            'id': self.id,
+            'category': self.category,
+            'name': self.name,
+            'difficulty': self.difficulty
+        }
+
+    @form.setter
+    def form(self, data):
+        if 'category' in data:
+            self.category = data['category'].strip().capitalize()
+
+        if 'name' in data:
+            self.name = data['name'].strip().capitalize()
+
+        if 'difficulty' in data:
+            try:
+                self.difficulty = int(data['difficulty'])
+
+                if self.difficulty < 1:
+                    self.difficulty = 1
+                elif self.difficulty > 5:
+                    self.difficulty = 5
+            except ValueError:
+                self.difficulty = 1
+
+    def validate(self):
+        errors = []
+
+        if not self.category:
+            errors.append('Category missing.')
+
+        if not self.name:
+            errors.append('Name missing.')
+
+        return errors
+
+    def to_line(self):
+        return f'{self.id}\t{self.category}\t{self.name}\t{self.difficulty}'
+
     @staticmethod
     def create(line):
         values = line.strip().split('\t')
@@ -61,3 +103,45 @@ def find_all_recipes_by_name_like(name):
             recipes.append(recipe)
 
     return recipes
+
+
+def save_recipe(recipe):
+    recipes = find_all_recipes()
+
+    if not recipe.id:
+        max_id = 0
+
+        for i in range(len(recipes)):
+            if recipes[i].id > max_id:
+                max_id = recipes[i].id
+
+        recipe.id = max_id + 1
+        recipes.append(recipe)
+    else:
+        for i in range(len(recipes)):
+            if recipes[i].id == recipe.id:
+                recipes[i] = recipe
+                break
+
+    __store_all_recipes(recipes)
+
+    return recipe
+
+
+def delete_recipe_by_id(recipe_id):
+    recipes = find_all_recipes()
+
+    for i in range(len(recipes)):
+        if recipes[i].id == recipe_id:
+            recipes.pop(i)
+            break
+
+    __store_all_recipes(recipes)
+
+
+def __store_all_recipes(recipes):
+    with open('recipes.txt', 'w', encoding='utf-8') as file:
+        file.write('id\tcategory\tname\tdifficulty\n')
+
+        for recipe in sorted(recipes, key=lambda item: f'{item.category}\0{item.name}'):
+            file.write(f'{recipe.to_line()}\n')
