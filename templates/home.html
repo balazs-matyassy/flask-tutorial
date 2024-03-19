@@ -1,8 +1,33 @@
 {% extends 'base.html' %}
 
 {% block main %}
-    <form method="post" action="{{ url_for('method') }}">
-        <a href="{{ url_for('method') }}" class="btn btn-primary">GET</a>
-        <button type="submit" class="btn btn-primary">POST</button>
+    <form method="post">
+        <div class="mb-3">
+            <label for="product" class="form-label">Product</label>
+            <input name="product"
+                   type="text"
+                   class="form-control"
+                   id="product"
+                   value="Androids"
+                   aria-describedby="product"
+                   required>
+        </div>
+
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity</label>
+            <input name="quantity"
+                   type="number"
+                   class="form-control"
+                   id="quantity"
+                   min="1"
+                   value="1"
+                   aria-describedby="quantity">
+        </div>
+
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Order</button>
+            </div>
+        </div>
     </form>
 {% endblock %}

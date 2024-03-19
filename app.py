@@ -1,16 +1,17 @@
-from flask import Flask, render_template, abort, request
+from flask import Flask, render_template, request
 
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 def home():
+    if request.method == 'POST':
+        return {
+            'product': request.form['product'],
+            'quantity': int(request.form['quantity'])
+        }
+
     return render_template('home.html')
-
-
-@app.route('/method', methods=('GET', 'POST'))
-def method():
-    return render_template('method.html', method=request.method)
 
 
 if __name__ == '__main__':
