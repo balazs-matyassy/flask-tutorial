@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    <form method="post" action="{{ url_for('method') }}">
+        <a href="{{ url_for('method') }}" class="btn btn-primary">GET</a>
+        <button type="submit" class="btn btn-primary">POST</button>
+    </form>
+{% endblock %}

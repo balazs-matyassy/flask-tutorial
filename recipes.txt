@@ -1,3 +1,0 @@
-id	category	name	description	difficulty
-1	Breakfast	Bacon Cheese Omelet	2
-2	Breakfast	Toast	1
