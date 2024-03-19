@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 
 {% block main %}
-    <form method="post" action="{{ url_for('method') }}">
-        <a href="{{ url_for('method') }}" class="btn btn-primary">GET</a>
-        <button type="submit" class="btn btn-primary">POST</button>
-    </form>
+    <h1>Gross prices</h1>
+
+    <table>
+        <tbody>
+        <tr>
+            <th>10 androids</th>
+            <td>{{ android_price }}</td>
+        </tr>
+        <tr>
+            <th>10 units of energy</th>
+            <td>{{ energy_price }}</td>
+        </tr>
+        <tr>
+            <th>10 spaceships</th>
+            <td>{{ spaceship_price }}</td>
+        </tr>
+        </tbody>
+    </table>
 {% endblock %}

@@ -1,3 +1,3 @@
-Flask Tutorial 0.4 - NOTES (HTTP METHOD)
+Flask Tutorial 0.6 - NOTES (DECORATOR)
 ==============
-A Flask Tutorial 0.4 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
+A Flask Tutorial 0.6 egy iskolai célokra tervezett Flask (Python) oktatási segédanyag.
