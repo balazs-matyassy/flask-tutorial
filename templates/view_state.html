@@ -10,7 +10,7 @@
                    type="text"
                    class="form-control"
                    id="product"
-                   value="Androids"
+                   value="{{ order.product }}"
                    aria-describedby="product"
                    required>
         </div>
@@ -22,7 +22,7 @@
                    class="form-control"
                    id="quantity"
                    min="1"
-                   value="1"
+                   value="{{ order.quantity }}"
                    aria-describedby="quantity">
         </div>
 
