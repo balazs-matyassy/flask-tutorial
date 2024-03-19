@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Cookbook 0.4 - NOTES (HTTP METHOD)</title>
+    <title>Flask Tutorial 0.6 - NOTES (SESSION)</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 </head>
@@ -13,7 +13,7 @@
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col text-center">
                 <a class="blog-header-logo text-body-emphasis text-decoration-none" href="#">
-                    Flask Cookbook 0.4 - NOTES (HTTP METHOD)
+                    Flask Tutorial 0.6 - NOTES (SESSION)
                 </a>
             </div>
         </div>
@@ -24,6 +24,11 @@
             <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('home') }}">
                 Home
             </a>
+            {% if g.username %}
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('logout') }}">
+                    Logout
+                </a>
+            {% endif %}
         </nav>
     </div>
 </div>
@@ -39,7 +44,7 @@
 
 <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
     <p>
-        Flask Cookbook 0.4 - NOTES (HTTP METHOD)
+        Flask Tutorial 0.6 - NOTES (SESSION)
     </p>
     <p class="mb-0">
         <a href="#">Back to top</a>

@@ -1,8 +1,39 @@
 {% extends 'base.html' %}
 
 {% block main %}
-    <form method="post" action="{{ url_for('method') }}">
-        <a href="{{ url_for('method') }}" class="btn btn-primary">GET</a>
-        <button type="submit" class="btn btn-primary">POST</button>
+    <form method="post">
+        <div class="mb-3">
+            <label for="user" class="form-label">User</label>
+            <select name="user" id="user" aria-describedby="user" required>
+                {% for user in users %}
+                    <option value="{{ loop.index0 }}">{{ user }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+        </div>
     </form>
+
+    {% if g.username %}
+        <table>
+            <tbody>
+            <tr>
+                <th>session.user_id</th>
+                <td>{{ session.user_id }}</td>
+            </tr>
+            <tr>
+                <th>session.username</th>
+                <td>{{ session.username }}</td>
+            </tr>
+            <tr>
+                <th>g.username</th>
+                <td>{{ g.username }}</td>
+            </tr>
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}
