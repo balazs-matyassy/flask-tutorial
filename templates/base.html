@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Tutorial 0.3</title>
+    <title>Flask Tutorial 0.4</title>
     <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/blog.css') }}" rel="stylesheet">
 </head>
@@ -14,7 +14,7 @@
             <div class="col"></div>
             <div class="col text-center">
                 <a class="blog-header-logo text-body-emphasis text-decoration-none" href="#">
-                    Flask Tutorial 0.3
+                    Flask Tutorial 0.4
                 </a>
             </div>
             <div class="col text-end">
@@ -42,6 +42,15 @@
             <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('list_all') }}">
                 Recipes
             </a>
+            {% if 'username' in session %}
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('logout') }}">
+                    Logout [{{ session.username }}]
+                </a>
+            {% else %}
+                <a class="nav-item nav-link link-body-emphasis" href="{{ url_for('login') }}">
+                    Login
+                </a>
+            {% endif %}
         </nav>
     </div>
 </div>
@@ -66,7 +75,7 @@
 
 <footer class="py-5 text-center text-body-secondary bg-body-tertiary">
     <p>
-        Flask Tutorial 0.3
+        Flask Tutorial 0.4
     </p>
     <p class="mb-0">
         <a href="#">Back to top</a>
