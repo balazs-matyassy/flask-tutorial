@@ -34,16 +34,14 @@ class Recipe:
 
         return errors
 
-    def to_line(self):
-        return f'{self.id}\t{self.category}\t{self.name}\t{self.difficulty}'
-
     @staticmethod
-    def create_from_line(line):
-        values = line.strip().split('\t')
-
-        return Recipe(
-            recipe_id=int(values[0].strip()),
-            category=values[1].strip(),
-            name=values[2].strip(),
-            difficulty=int(values[3].strip())
-        )
+    def create_from_row(row):
+        if row:
+            return Recipe(
+                recipe_id=row['id'],
+                category=row['category'],
+                name=row['name'],
+                difficulty=row['difficulty']
+            )
+        else:
+            return None

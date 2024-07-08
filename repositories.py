@@ -1,83 +1,117 @@
 import os
 
+import pymysql
 from flask import current_app
+
+
+def _get_connection():
+    return pymysql.connect(
+        host=current_app.config['DB_HOST'],
+        port=current_app.config['DB_PORT'],
+        user=current_app.config['DB_USERNAME'],
+        password=current_app.config['DB_PASSWORD'],
+        database=current_app.config['DB_DATABASE'],
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 
 class RecipeRepository:
     @staticmethod
     def find_all():
-        path = os.path.join(current_app.instance_path, 'recipes.txt')
+        with _get_connection() as db:
+            with db.cursor() as cursor:
+                query = '''
+                    SELECT `id`, `category`,`name`, `difficulty`
+                    FROM `recipe`
+                    ORDER BY `category`, `name`;
+                '''
 
-        with open(path, encoding='utf-8') as file:
-            recipes = []
+                cursor.execute(query)
 
-            file.readline()  # header
-
-            for line in file:
-                recipe = Recipe.create_from_line(line)
-                recipes.append(recipe)
-
-            return recipes
+                return [Recipe.create_from_row(row) for row in cursor.fetchall()]
 
     @staticmethod
     def find_by_id(recipe_id):
-        for recipe in RecipeRepository.find_all():
-            if recipe.id == recipe_id:
-                return recipe
+        with _get_connection() as db:
+            with db.cursor() as cursor:
+                query = '''
+                    SELECT `id`, `category`,`name`, `difficulty`
+                    FROM `recipe`
+                    WHERE `id` = %s;
+                '''
+                args = (recipe_id,)
 
-        return None
+                cursor.execute(query, args)
+
+                return Recipe.create_from_row(cursor.fetchone())
 
     @staticmethod
     def find_all_by_name_like(name):
-        return [
-            recipe
-            for recipe in RecipeRepository.find_all()
-            if name.lower() in recipe.name.lower()
-        ]
+        with _get_connection() as db:
+            with db.cursor() as cursor:
+                query = '''
+                        SELECT `id`, `category`,`name`, `difficulty`
+                        FROM `recipe`
+                        WHERE `name` LIKE %s
+                        ORDER BY `category`, `name`;
+                    '''
+                args = (f'%{name}%',)
+                cursor.execute(query, args)
+
+                return [Recipe.create_from_row(row) for row in cursor.fetchall()]
 
     @staticmethod
     def save(recipe):
-        recipes = RecipeRepository.find_all()
+        with _get_connection() as db:
+            with db.cursor() as cursor:
+                if not recipe.id:
+                    query = '''
+                        INSERT INTO `recipe`
+                            (`category`, `name`, `difficulty`)
+                        VALUES(%s, %s, %s);
+                    '''
+                    args = (
+                        recipe.category,
+                        recipe.name,
+                        recipe.difficulty
+                    )
 
-        if not recipe.id:
-            max_id = 0
+                    cursor.execute(query, args)
+                    db.commit()
 
-            for i in range(len(recipes)):
-                if recipes[i].id > max_id:
-                    max_id = recipes[i].id
+                    recipe.id = cursor.lastrowid
+                else:
+                    query = '''
+                        UPDATE `recipe`
+                        SET `category` = %s,
+                            `name` = %s,
+                            `difficulty` = %s
+                        WHERE `id` = %s;
+                    '''
+                    args = (
+                        recipe.category,
+                        recipe.name,
+                        recipe.difficulty,
+                        recipe.id
+                    )
 
-            recipe.id = max_id + 1
-            recipes.append(recipe)
-        else:
-            for i in range(len(recipes)):
-                if recipes[i].id == recipe.id:
-                    recipes[i] = recipe
-                    break
+                    cursor.execute(query, args)
+                    db.commit()
 
-        RecipeRepository.__store_all(recipes)
-
-        return recipe
+            return recipe
 
     @staticmethod
     def delete(recipe):
-        recipes = RecipeRepository.find_all()
+        with _get_connection() as db:
+            with db.cursor() as cursor:
+                query = '''
+                    DELETE FROM `recipe`
+                    WHERE `id` = %s;
+                '''
+                args = (recipe.id,)
 
-        for i in range(len(recipes)):
-            if recipes[i].id == recipe.id:
-                recipes.pop(i)
-                break
-
-        RecipeRepository.__store_all(recipes)
-
-    @staticmethod
-    def __store_all(recipes):
-        path = os.path.join(current_app.instance_path, 'recipes.txt')
-
-        with open(path, 'w', encoding='utf-8') as file:
-            file.write('id\tcategory\tname\tdifficulty\n')
-
-            for recipe in sorted(recipes, key=lambda item: f'{item.category}\0{item.name}'):
-                file.write(f'{recipe.to_line()}\n')
+                cursor.execute(query, args)
+                db.commit()
 
 
 from models import Recipe
