@@ -11,7 +11,7 @@
             <th>Category</th>
             <th>Name</th>
             <th>Difficulty</th>
-            <th></th>
+            <th colspan="3"></th>
         </tr>
         </thead>
         <tbody>
@@ -27,8 +27,26 @@
                         View
                     </a>
                 </td>
+                <td>
+                    <a href="{{ url_for('edit', recipe_id=recipe.id) }}" class="btn btn-primary">
+                        Edit
+                    </a>
+                </td>
+                <td>
+                    <form method="post" action="{{ url_for('delete', recipe_id=recipe.id) }}">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Delete recipe?')">
+                            Delete
+                        </button>
+                    </form>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+
+    <div>
+        <a href="{{ url_for('create') }}" class="btn btn-primary">
+            Create recipe
+        </a>
+    </div>
 {% endblock %}
